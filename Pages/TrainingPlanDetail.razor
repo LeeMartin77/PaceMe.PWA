@@ -11,94 +11,99 @@
 @inject ITrainingPlanService _trainingPlanService
 @inject ITrainingPlanActivityService _trainingPlanActivityService
 
-<h1>Training Plan: @trainingPlanEditForm.Name</h1>
 
-<NavLink class="button button-outline" href="/trainingplans">Back To Training Plans</NavLink>
+<Loading IsLoading="_loading">
+    <h1>Training Plan: @trainingPlanEditForm.Name</h1>
 
-<button class='button @(_displayEditor ? "button-outline" : "")' @onclick=@(e => _displayEditor = !_displayEditor)>Edit Training Plan</button>
-@if(_displayEditor){
-    <EditForm Model="@trainingPlanEditForm" OnValidSubmit="@HandleEditValidSubmit">
+    <NavLink class="button button-outline" href="/trainingplans">Back To Training Plans</NavLink>
+
+    <button class='button @(_displayEditor ? "button-outline" : "")' @onclick=@(e => _displayEditor = !_displayEditor)>Edit Training Plan</button>
+    @if(_displayEditor){
+        <EditForm Model="@trainingPlanEditForm" OnValidSubmit="@HandleEditValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label>
+                Name:
+                <InputText id="Name" @bind-Value="trainingPlanEditForm.Name" />
+            </label>
+            <label>
+                Active:
+                <InputCheckbox id="Active" @bind-Value="trainingPlanEditForm.Active" />
+            </label>
+
+            <button type="submit">Submit Edit</button>
+        </EditForm>
+    }
+    <hr/>
+    <h3>Activities</h3>
+    <div class="activity-calendar-control">
+        <button class="button" @onclick=@(e => viewingMonth = viewingMonth.AddMonths(-1))>
+            @viewingMonth.AddMonths(-1).ToString("MMM")
+        </button>
+        <span>
+            @viewingMonth.ToString("MMMM yyyy")
+        </span>
+        <button class="button" @onclick=@(e => viewingMonth = viewingMonth.AddMonths(1))>
+            @viewingMonth.AddMonths(1).ToString("MMM")
+        </button>
+    </div>
+    <div class="activity-calendar">
+        <div class="activity-calendar-header">
+            <div class="activity-calendar-header-cell">Mon</div>
+            <div class="activity-calendar-header-cell">Tue</div>
+            <div class="activity-calendar-header-cell">Wed</div>
+            <div class="activity-calendar-header-cell">Thu</div>
+            <div class="activity-calendar-header-cell">Fri</div>
+            <div class="activity-calendar-header-cell">Sat</div>
+            <div class="activity-calendar-header-cell">Sun</div>
+        </div>
+            <div class="activity-calendar-body">
+                @foreach(var week in mondaysOfWeekInMonth){
+                    <div class="activity-calendar-row">
+                        @for(int i = 0; i < 7; i++){
+                            <div class="activity-calendar-cell">
+                                <label class='activity-calendar-day-label @(week.AddDays(i).Month != viewingMonth.Month ? "faded" : "")'>@week.AddDays(i).Day</label>
+                                @foreach(var activity in ActivitiesOnDay(week.AddDays(i)))
+                                {
+                                    <a class='@(activity.Completed ? "calendar-activity completed-calendar-activity" : "calendar-activity")' href='@($"/trainingplan/{activity.TrainingPlanId}/activity/{activity.TrainingPlanActivityId}")'>@activity.Name</a>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+    </div>
+    <hr/>
+    <h3>Create Activity</h3>
+    <EditForm Model="@trainingPlanActivityCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
-
         <label>
-            Name:
-            <InputText id="Name" @bind-Value="trainingPlanEditForm.Name" />
+            Activity Name:
+            <InputText id="Name" @bind-Value="trainingPlanActivityCreateForm.Name" />
+
         </label>
         <label>
-            Active:
-            <InputCheckbox id="Active" @bind-Value="trainingPlanEditForm.Active" />
+            Date:
+            <InputDate id="DateTime" @bind-Value="trainingPlanActivityCreateForm.DateTime" />
+        </label>
+        <label>
+            Completed:
+            <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityCreateForm.Completed" />
         </label>
 
-        <button type="submit">Submit Edit</button>
+        <button type="submit">Create</button>
     </EditForm>
-}
-<hr/>
-<h3>Activities</h3>
-<div class="activity-calendar-control">
-    <button class="button" @onclick=@(e => viewingMonth = viewingMonth.AddMonths(-1))>
-        @viewingMonth.AddMonths(-1).ToString("MMM")
-    </button>
-    <span>
-        @viewingMonth.ToString("MMMM yyyy")
-    </span>
-    <button class="button" @onclick=@(e => viewingMonth = viewingMonth.AddMonths(1))>
-        @viewingMonth.AddMonths(1).ToString("MMM")
-    </button>
-</div>
-<div class="activity-calendar">
-    <div class="activity-calendar-header">
-        <div class="activity-calendar-header-cell">Mon</div>
-        <div class="activity-calendar-header-cell">Tue</div>
-        <div class="activity-calendar-header-cell">Wed</div>
-        <div class="activity-calendar-header-cell">Thu</div>
-        <div class="activity-calendar-header-cell">Fri</div>
-        <div class="activity-calendar-header-cell">Sat</div>
-        <div class="activity-calendar-header-cell">Sun</div>
-    </div>
-        <div class="activity-calendar-body">
-            @foreach(var week in mondaysOfWeekInMonth){
-                <div class="activity-calendar-row">
-                    @for(int i = 0; i < 7; i++){
-                        <div class="activity-calendar-cell">
-                            <label class='activity-calendar-day-label @(week.AddDays(i).Month != viewingMonth.Month ? "faded" : "")'>@week.AddDays(i).Day</label>
-                            @foreach(var activity in ActivitiesOnDay(week.AddDays(i)))
-                            {
-                                <a class='@(activity.Completed ? "calendar-activity completed-calendar-activity" : "calendar-activity")' href='@($"/trainingplan/{activity.TrainingPlanId}/activity/{activity.TrainingPlanActivityId}")'>@activity.Name</a>
-                            }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-</div>
-<hr/>
-<h3>Create Activity</h3>
-<EditForm Model="@trainingPlanActivityCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <label>
-        Activity Name:
-        <InputText id="Name" @bind-Value="trainingPlanActivityCreateForm.Name" />
-
-    </label>
-    <label>
-        Date:
-        <InputDate id="DateTime" @bind-Value="trainingPlanActivityCreateForm.DateTime" />
-    </label>
-    <label>
-        Completed:
-        <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityCreateForm.Completed" />
-    </label>
-
-    <button type="submit">Create</button>
-</EditForm>
+</Loading>
 @code {
     [Parameter]
     public string TrainingPlanId { get; set; }
 
     private Guid _trainingPlanId { get; set; }
     private bool _displayEditor {get; set;} = false;
+
+    private bool _loading = true;
 
     private TrainingPlan trainingPlanEditForm = new TrainingPlan();
     private TrainingPlanActivity trainingPlanActivityCreateForm = new TrainingPlanActivity();
@@ -134,6 +139,7 @@
 
         trainingPlanEditForm = await _trainingPlanService.GetTrainingPlan(user.GetMsalUserId(), _trainingPlanId);
         _trainingPlanActivities = await _trainingPlanActivityService.GetTrainingPlanActivities(user.GetMsalUserId(), _trainingPlanId);
+        _loading = false;
     }
 
     private async Task HandleEditValidSubmit()

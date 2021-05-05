@@ -14,76 +14,78 @@
 @inject ITrainingPlanActivitySegmentService _trainingPlanActivitySegmentService
 @inject NavigationManager NavigationManager
 
-<h1>Activity: @trainingPlanActivityEditForm.Name</h1>
-<NavLink class="button button-outline" href='@($"/trainingplan/{_trainingPlanId}")'>Back To Training Plan</NavLink>
-<button class='button @(_displayEditor ? "button-outline" : "")' @onclick="@(e => _displayEditor = !_displayEditor)">Toggle Activity Editor</button>
-<button class="button button-outline" @onclick="@(e => DeleteTrainingPlanActivity(trainingPlanActivityEditForm))">Delete</button>
-@if(_displayEditor){
 
-    <EditForm Model="@trainingPlanActivityEditForm" OnValidSubmit="@HandleEditValidSubmit">
+<Loading IsLoading="_loading">
+    <h1>Activity: @trainingPlanActivityEditForm.Name</h1>
+    <NavLink class="button button-outline" href='@($"/trainingplan/{_trainingPlanId}")'>Back To Training Plan</NavLink>
+    <button class='button @(_displayEditor ? "button-outline" : "")' @onclick="@(e => _displayEditor = !_displayEditor)">Toggle Activity Editor</button>
+    <button class="button button-outline" @onclick="@(e => DeleteTrainingPlanActivity(trainingPlanActivityEditForm))">Delete</button>
+    @if(_displayEditor){
+
+        <EditForm Model="@trainingPlanActivityEditForm" OnValidSubmit="@HandleEditValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <label>
+                Activity Name:
+                <InputText id="Name" @bind-Value="trainingPlanActivityEditForm.Name" />
+            </label>
+            <label>
+                Completed:
+                <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityEditForm.Completed" />
+            </label>
+            <label>
+                Date:
+                <InputDate id="DateTime" @bind-Value="trainingPlanActivityEditForm.DateTime" />
+            </label>
+
+            <button class="button" type="submit">Update</button>
+        </EditForm>
+    }
+    <hr/>
+    <h3>Create Segment</h3>
+    <EditForm Model="@segmentCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <label>
-            Activity Name:
-            <InputText id="Name" @bind-Value="trainingPlanActivityEditForm.Name" />
-        </label>
-        <label>
-            Completed:
-            <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityEditForm.Completed" />
-        </label>
-        <label>
-            Date:
-            <InputDate id="DateTime" @bind-Value="trainingPlanActivityEditForm.DateTime" />
-        </label>
+            Notes:
+            <InputText id="Notes" @bind-Value="segmentCreateForm.Notes" />
 
-        <button class="button" type="submit">Update</button>
+        </label>
+        <label>
+            Duration (Minutes):
+            <InputNumber id="DurationSeconds" @bind-Value="Duration.Minutes" />
+        </label>
+        <label>
+            Duration (Seconds):
+            <InputNumber id="DurationSeconds" @bind-Value="Duration.Seconds" />
+        </label>
+        <button class="button" type="submit">Create</button>
     </EditForm>
-}
-<hr/>
-<h3>Create Segment</h3>
-<EditForm Model="@segmentCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <label>
-        Notes:
-        <InputText id="Notes" @bind-Value="segmentCreateForm.Notes" />
-
-    </label>
-    <label>
-        Duration (Minutes):
-        <InputNumber id="DurationSeconds" @bind-Value="Duration.Minutes" />
-    </label>
-    <label>
-        Duration (Seconds):
-        <InputNumber id="DurationSeconds" @bind-Value="Duration.Seconds" />
-    </label>
-    <button class="button" type="submit">Create</button>
-</EditForm>
-<hr/>
-<table>
-  <thead>
-    <tr>
-      <th>Notes</th>
-      <th>Segment Duration</th>
-      <th>Delete</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach(var segment in _segments.OrderBy(x => x.Order)){
-    <tr>
-        <td>@segment.Notes</td>
-        <td>@DisplayTime(segment.DurationSeconds)</td>
-        <td><button class="button button-outline" @onclick="@(e => DeleteSegment(segment))">Delete</button></td>
-    </tr>
-    }
-    <tr>
-        <td>Total Duration:</td>
-        <td>@DisplayTime(totalDuration)</td>
-        <td></td>
-    </tr>
-  </tbody>
-</table>
-
+    <hr/>
+    <table>
+    <thead>
+        <tr>
+        <th>Notes</th>
+        <th>Segment Duration</th>
+        <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var segment in _segments.OrderBy(x => x.Order)){
+        <tr>
+            <td>@segment.Notes</td>
+            <td>@DisplayTime(segment.DurationSeconds)</td>
+            <td><button class="button button-outline" @onclick="@(e => DeleteSegment(segment))">Delete</button></td>
+        </tr>
+        }
+        <tr>
+            <td>Total Duration:</td>
+            <td>@DisplayTime(totalDuration)</td>
+            <td></td>
+        </tr>
+    </tbody>
+    </table>
+</Loading>
 @code {
 
     [Parameter]
@@ -95,6 +97,8 @@
     private Guid _trainingPlanActivityId { get; set; }
 
     private bool _displayEditor {get; set;} = false;
+
+    private bool _loading { get; set; } = true;
 
     private class SplitTime
     {
@@ -139,7 +143,7 @@
         trainingPlan = await _trainingPlanService.GetTrainingPlan(user.GetMsalUserId(), _trainingPlanId);
         trainingPlanActivityEditForm = await _trainingPlanActivityService.GetTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
-
+        _loading = false;
     }
     
 

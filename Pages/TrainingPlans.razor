@@ -22,7 +22,7 @@
         Active:
         <InputCheckbox id="Active" @bind-Value="editForm.Active" />
     </label>
-    <button type="submit">Create</button>
+    <button type="submit" disabled=@_loading>Create</button>
 </EditForm>
 
 <hr/>
@@ -36,19 +36,22 @@
       <th>Delete</th>
     </tr>
   </thead>
-  <tbody>
-    @foreach(var plan in _trainingPlans){
-    <tr>
-        <td>@plan.Name</td>
-        <td>@(plan.Active ? "Active" : "Inactive")</td>
-        <td><NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink></td>
-        <td><button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button></td>
-    </tr>
-    }
-  </tbody>
+  <Loading IsLoading="_loading">
+    <tbody>
+      @foreach(var plan in _trainingPlans){
+      <tr>
+          <td>@plan.Name</td>
+          <td>@(plan.Active ? "Active" : "Inactive")</td>
+          <td><NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink></td>
+          <td><button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button></td>
+      </tr>
+      }
+    </tbody>
+  </Loading>
 </table>
 @code {
     private IReadOnlyList<TrainingPlan> _trainingPlans = new List<TrainingPlan>();
+    private bool _loading = true;
 
     private TrainingPlan editForm = new TrainingPlan();
 
@@ -56,27 +59,34 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
-        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+        await GetTrainingPlans(user);
     }
 
     private async Task HandleValidSubmit()
     {
+        _loading = true;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         await _trainingPlanService.CreateTrainingPlan(user.GetMsalUserId(), editForm);
-        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+        await GetTrainingPlans(user);
 
     }
 
     private async Task DeleteTrainingPlan(TrainingPlan plan)
     {
+        _loading = true;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         await _trainingPlanService.DeleteTrainingPlan(user.GetMsalUserId(), plan.TrainingPlanId);
-        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+        await GetTrainingPlans(user);
 
+    }
+
+    private async Task GetTrainingPlans(ClaimsPrincipal user)
+    {
+        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+        _loading = false;
     }
 }
