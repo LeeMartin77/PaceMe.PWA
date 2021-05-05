@@ -1,0 +1,17 @@
+﻿<nav class="navigation">
+    <section class="container">
+        <a class="float-left navigation-title" href="/">PaceMe</a>
+        <AuthorizeView>
+            <Authorized>
+                <section class="float-left navigation-title">
+                    <ul class="navigation-list">
+                        <li class="navigation-item">
+                            <NavLink class="navigation-link" href="/trainingplans">Training Plans</NavLink>
+                        </li>
+                    </ul>
+                </section>
+            </Authorized>
+        </AuthorizeView>
+        <LoginDisplay/>
+    </section>
+</nav>

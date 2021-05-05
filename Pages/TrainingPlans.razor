@@ -1,0 +1,82 @@
+@page "/TrainingPlans"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using PaceMe.BlazorApp.Services
+@using PaceMe.BlazorApp.Model
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using PaceMe.BlazorApp.Utilities
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITrainingPlanService _trainingPlanService
+
+<h1>Training Plans</h1>
+
+<EditForm Model="@editForm" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label>
+        Plan Name:
+        <InputText id="name" @bind-Value="editForm.Name" />
+    </label>
+    <label>
+        Active:
+        <InputCheckbox id="Active" @bind-Value="editForm.Active" />
+    </label>
+    <button type="submit">Create</button>
+</EditForm>
+
+<hr/>
+<h3>Training Plans</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Active</th>
+      <th>Details</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach(var plan in _trainingPlans){
+    <tr>
+        <td>@plan.Name</td>
+        <td>@(plan.Active ? "Active" : "Inactive")</td>
+        <td><NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink></td>
+        <td><button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button></td>
+    </tr>
+    }
+  </tbody>
+</table>
+@code {
+    private IReadOnlyList<TrainingPlan> _trainingPlans = new List<TrainingPlan>();
+
+    private TrainingPlan editForm = new TrainingPlan();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        await _trainingPlanService.CreateTrainingPlan(user.GetMsalUserId(), editForm);
+        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+
+    }
+
+    private async Task DeleteTrainingPlan(TrainingPlan plan)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        await _trainingPlanService.DeleteTrainingPlan(user.GetMsalUserId(), plan.TrainingPlanId);
+        _trainingPlans = await _trainingPlanService.GetTrainingPlans(user.GetMsalUserId());
+
+    }
+}
