@@ -42,49 +42,39 @@
         </EditForm>
     }
     <hr/>
-    <h3>Create Segment</h3>
-    <EditForm Model="@segmentCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <label>
-            Notes:
-            <InputText id="Notes" @bind-Value="segmentCreateForm.Notes" />
-
-        </label>
-        <label>
-            Duration (Minutes):
-            <InputNumber id="DurationSeconds" @bind-Value="Duration.Minutes" />
-        </label>
-        <label>
-            Duration (Seconds):
-            <InputNumber id="DurationSeconds" @bind-Value="Duration.Seconds" />
-        </label>
-        <button class="button" type="submit">Create</button>
-    </EditForm>
-    <hr/>
-    <table>
-    <thead>
-        <tr>
-        <th>Notes</th>
-        <th>Segment Duration</th>
-        <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
+    <h2>Total time: @DisplayTime(totalDuration)</h2>
+    <div class="segment-list">
         @foreach(var segment in _segments.OrderBy(x => x.Order)){
-        <tr>
-            <td>@segment.Notes</td>
-            <td>@DisplayTime(segment.DurationSeconds)</td>
-            <td><button class="button button-outline" @onclick="@(e => DeleteSegment(segment))">Delete</button></td>
-        </tr>
+        <div class="segment">
+            <button class="button button-outline button-delete" @onclick="@(e => DeleteSegment(segment))">Delete</button>
+            <div class="segment-notes">@segment.Notes</div>
+            <div class="segment-time">@DisplayTime(segment.DurationSeconds)</div>
+        </div>
         }
-        <tr>
-            <td>Total Duration:</td>
-            <td>@DisplayTime(totalDuration)</td>
-            <td></td>
-        </tr>
-    </tbody>
-    </table>
+        <div class="segment create-segment">
+            <EditForm Model="@segmentCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <label>
+                    Notes:
+                    <InputText id="Notes" @bind-Value="segmentCreateForm.Notes" />
+
+                </label>
+                <label>
+                    Duration:
+                </label>
+                <div class="time-input-wrapper">
+                    <div class="time-input">
+                        <InputNumber @bind-Value="Duration.Minutes" />
+                    </div>
+                    <div class="time-input">
+                        <InputNumber @bind-Value="Duration.Seconds" />
+                    </div>
+                </div>
+                <button class="button" type="submit">Create</button>
+            </EditForm>
+        </div>
+    </div>
 </Loading>
 @code {
 
