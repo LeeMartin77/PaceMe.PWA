@@ -14,11 +14,16 @@
     position: relative;
 }
 
-.segment button.button-delete {
+.segment-controls {
     position: absolute;
     right: 1rem;
     top: 1rem;
-    width: 12rem;
+}
+
+.segment-controls .segment-control-button {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.6rem;
+    line-height: 0;
 }
 
 .segment-notes {

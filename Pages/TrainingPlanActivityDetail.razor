@@ -45,7 +45,10 @@
     <div class="segment-list">
         @foreach(var segment in _segments.OrderBy(x => x.Order)){
         <div class="segment">
-            <button class="button button-outline button-delete" @onclick="@(e => DeleteSegment(segment))">Delete</button>
+            <div class="segment-controls">
+                <button class="button-outline segment-control-button" @onclick="@(e => DeleteSegment(segment))">Delete</button>
+                <button class="button-outline segment-control-button" @onclick="@(e => DuplicateSegment(segment))">Duplicate</button>
+            </div>
             <div class="segment-notes">@segment.Notes</div>
             <div class="segment-time">@TimeFormatter.SecondsToTime(segment.DurationSeconds)</div>
         </div>
@@ -162,12 +165,35 @@
         Duration = new SplitTime();
     }
 
-    private async Task DeleteSegment(TrainingPlanActivitySegment segment){
-
+    private async Task DuplicateSegment(TrainingPlanActivitySegment segment)
+    {
+        var newSegment = new TrainingPlanActivitySegment 
+        {
+            TrainingPlanActivityId = segment.TrainingPlanActivityId,
+            Order = _segments.Select(x => x.Order).Max() + 1,
+            DurationSeconds = segment.DurationSeconds,
+            Notes = segment.Notes
+        };
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        await _trainingPlanActivitySegmentService.DeleteTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segment.TrainingPlanActivitySegmentId);
+        await _trainingPlanActivitySegmentService.CreateTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, newSegment);
+        _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
+    }
+
+    private async Task DeleteSegment(TrainingPlanActivitySegment segment)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _segments = _segments.Where(x => x.TrainingPlanActivitySegmentId != segment.TrainingPlanActivitySegmentId);
+        var highersegments = _segments.Where(x => x.Order > segment.Order).ToList();
+        var tasks = highersegments.Select(x => 
+            {
+                x.Order = x.Order - 1; 
+                return _trainingPlanActivitySegmentService.UpdateTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, x);
+            });
+        tasks = tasks.Append(_trainingPlanActivitySegmentService.DeleteTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segment.TrainingPlanActivitySegmentId));
+        await Task.WhenAll(tasks);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
     }
 
