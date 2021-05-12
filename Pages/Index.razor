@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.Authorization
 @using PaceMe.BlazorApp.Services
 @using PaceMe.BlazorApp.Model
 @using System.Security.Claims
@@ -18,7 +17,7 @@
                 <div>
                     <h2>@_nextActivity.Name</h2>
                     <p>@_nextActivity.DateTime.Date.ToString("yyyy-MM-dd") | @QuickTimeTilNextActivity()</p>
-                    <p>@SecondsToTime(_nextActivitySegments.Sum(x => x.DurationSeconds)) Minutes</p>
+                    <p>@TimeFormatter.SecondsToTime(_nextActivitySegments.Sum(x => x.DurationSeconds)) Duration</p>
                     @if(_nextActivity.DateTime.Date == DateTime.Now.Date){
                         <button class="button" @onclick="@(e => CompleteNextActivity())">Complete</button>
                     }
@@ -41,11 +40,6 @@
     private bool _loading = true;
     private IEnumerable<TrainingPlanActivitySegment> _nextActivitySegments = new List<TrainingPlanActivitySegment>();
     private ClaimsPrincipal _user;
-
-    private string SecondsToTime(int seconds)
-    {
-        return $"{(seconds / 60)}:{(seconds % 60):00}";
-    }
 
     protected override async Task OnInitializedAsync()
     {

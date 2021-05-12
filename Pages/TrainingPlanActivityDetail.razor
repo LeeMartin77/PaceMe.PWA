@@ -4,7 +4,6 @@
 @using PaceMe.BlazorApp.Services
 @using PaceMe.BlazorApp.Model
 @using System
-@using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using PaceMe.BlazorApp.Utilities
 @using System.ComponentModel.DataAnnotations
@@ -42,13 +41,13 @@
         </EditForm>
     }
     <hr/>
-    <h2>Total time: @DisplayTime(totalDuration)</h2>
+    <h2>Total time: @TimeFormatter.SecondsToTime(totalDuration)</h2>
     <div class="segment-list">
         @foreach(var segment in _segments.OrderBy(x => x.Order)){
         <div class="segment">
             <button class="button button-outline button-delete" @onclick="@(e => DeleteSegment(segment))">Delete</button>
             <div class="segment-notes">@segment.Notes</div>
-            <div class="segment-time">@DisplayTime(segment.DurationSeconds)</div>
+            <div class="segment-time">@TimeFormatter.SecondsToTime(segment.DurationSeconds)</div>
         </div>
         }
         <div class="segment create-segment">
