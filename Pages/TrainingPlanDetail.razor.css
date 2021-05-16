@@ -37,6 +37,10 @@
     background-color: rgba(0,0,0,0.05);
 }
 
+.activity-calendar-cell {
+    cursor: pointer;
+}
+
 .activity-calendar-day-label {
     top: 0;
     left: 0;

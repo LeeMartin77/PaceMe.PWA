@@ -62,9 +62,10 @@
                 @foreach(var week in mondaysOfWeekInMonth){
                     <div class="activity-calendar-row">
                         @for(int i = 0; i < 7; i++){
-                            <div class="activity-calendar-cell">
-                                <label class='activity-calendar-day-label @(week.AddDays(i).Month != viewingMonth.Month ? "faded" : "")'>@week.AddDays(i).Day</label>
-                                @foreach(var activity in ActivitiesOnDay(week.AddDays(i)))
+                            int daysToAdd = i;
+                            <div class="activity-calendar-cell" @onclick="() => EditForm.Open(week.AddDays(daysToAdd))">
+                                <label class='activity-calendar-day-label @(week.AddDays(i).Month != viewingMonth.Month ? "faded" : "")'>@week.AddDays(daysToAdd).Day</label>
+                                @foreach(var activity in ActivitiesOnDay(week.AddDays(daysToAdd)))
                                 {
                                     <a class='@(activity.Completed ? "calendar-activity completed-calendar-activity" : "calendar-activity")' href='@($"/trainingplan/{activity.TrainingPlanId}/activity/{activity.TrainingPlanActivityId}")'>@activity.Name</a>
                                 }
@@ -77,8 +78,6 @@
     <hr />
 
     <PaceMe.BlazorApp.Shared.Forms.ActivityEditForm @ref="EditForm" OnEdit="HandleCreateValidSubmit"></PaceMe.BlazorApp.Shared.Forms.ActivityEditForm>
-
-    <button @onclick="() => EditForm.Open(DateTime.Now)">Add Activity</button>
 
 </Loading>
 @code {
