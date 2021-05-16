@@ -1,0 +1,76 @@
+@using Model
+@if (_showModal) 
+{
+    <div class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-content">
+                <EditForm Model="@trainingPlanActivityForm" OnValidSubmit="@HandleCreateValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <label>
+                        Activity Name:
+                        <InputText id="Name" @bind-Value="trainingPlanActivityForm.Name" />
+
+                    </label>
+                    <label>
+                        Date:
+                        <InputDate id="DateTime" @bind-Value="trainingPlanActivityForm.DateTime" />
+                    </label>
+                    <label>
+                        Completed:
+                        <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityForm.Completed" />
+                    </label>
+
+                    <button type="submit">@ButtonText</button>
+                    <button @onclick="Close">Dismiss</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+
+    private TrainingPlanActivity trainingPlanActivityForm = new TrainingPlanActivity();
+
+    [Parameter] 
+    public EventCallback<TrainingPlanActivity> OnEdit { get; set; }
+
+    private string ButtonText = "Submit";
+
+    private bool _showModal = false;
+
+    public void Open(DateTime dateOfActivity)
+    {
+        trainingPlanActivityForm = new TrainingPlanActivity {
+            DateTime = dateOfActivity
+        };
+        ButtonText = "Create";
+        ShowModal();
+    }
+
+
+    public void Open(TrainingPlanActivity existingActivity)
+    {
+        trainingPlanActivityForm = existingActivity;
+        ButtonText = "Edit";
+        ShowModal();
+    }
+
+    private void ShowModal()
+    {
+        _showModal = true;
+    }
+
+    private void HandleCreateValidSubmit()
+    {
+        OnEdit.InvokeAsync(trainingPlanActivityForm);
+        Close();
+    }
+
+    public void Close()
+    {
+        _showModal = false;
+    }
+}

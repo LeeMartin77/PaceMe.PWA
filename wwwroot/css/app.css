@@ -18,3 +18,32 @@
     right: 0.75rem;
     top: 0.5rem;
 }
+
+.modal-backdrop {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 999;
+}
+
+.modal {
+    position: relative;
+    min-width: 300px;
+    max-width: 90vw;
+    padding: 2rem;
+    border-radius: 1rem;
+    background-color: #FFF;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.modal-content {
+    width: 100%;
+    float: left;
+    display: block;
+}

@@ -74,27 +74,12 @@
                 }
             </div>
     </div>
-    <hr/>
-    <h3>Create Activity</h3>
-    <EditForm Model="@trainingPlanActivityCreateForm" OnValidSubmit="@HandleCreateValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <label>
-            Activity Name:
-            <InputText id="Name" @bind-Value="trainingPlanActivityCreateForm.Name" />
+    <hr />
 
-        </label>
-        <label>
-            Date:
-            <InputDate id="DateTime" @bind-Value="trainingPlanActivityCreateForm.DateTime" />
-        </label>
-        <label>
-            Completed:
-            <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityCreateForm.Completed" />
-        </label>
+    <PaceMe.BlazorApp.Shared.Forms.ActivityEditForm @ref="EditForm" OnEdit="HandleCreateValidSubmit"></PaceMe.BlazorApp.Shared.Forms.ActivityEditForm>
 
-        <button type="submit">Create</button>
-    </EditForm>
+    <button @onclick="() => EditForm.Open(DateTime.Now)">Add Activity</button>
+
 </Loading>
 @code {
     [Parameter]
@@ -105,9 +90,9 @@
 
     private bool _loading = true;
 
-    private TrainingPlan trainingPlanEditForm = new TrainingPlan();
-    private TrainingPlanActivity trainingPlanActivityCreateForm = new TrainingPlanActivity();
+    private PaceMe.BlazorApp.Shared.Forms.ActivityEditForm EditForm { get; set; }
 
+    private TrainingPlan trainingPlanEditForm = new TrainingPlan();
     private IEnumerable<TrainingPlanActivity> _trainingPlanActivities = new List<TrainingPlanActivity>();
 
     private DateTime viewingMonth;
@@ -133,7 +118,6 @@
         _trainingPlanId = Guid.Parse(TrainingPlanId);
         viewingMonth = DateTime.Now;
         viewingMonth = viewingMonth.AddDays(-viewingMonth.Day + 1);
-        trainingPlanActivityCreateForm.DateTime = DateTime.Now;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -155,15 +139,12 @@
         return _trainingPlanActivities.Where(x => x.DateTime.Date == day.Date);
     }
 
-    private async Task HandleCreateValidSubmit()
+    private async Task HandleCreateValidSubmit(TrainingPlanActivity trainingPlanActivityCreateForm)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         await _trainingPlanActivityService.CreateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, trainingPlanActivityCreateForm);
         _trainingPlanActivities = await _trainingPlanActivityService.GetTrainingPlanActivities(user.GetMsalUserId(), _trainingPlanId);
-        var previousDatetime = trainingPlanActivityCreateForm.DateTime;
-        trainingPlanActivityCreateForm = new TrainingPlanActivity();
-        trainingPlanActivityCreateForm.DateTime = previousDatetime.AddDays(1);
     }
 }
