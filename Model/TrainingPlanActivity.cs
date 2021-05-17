@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace PaceMe.BlazorApp.Model
 {
-    public class TrainingPlanActivity
+    public class TrainingPlanActivity : ITypedClone<TrainingPlanActivity>
     {
         [Required]
         public Guid TrainingPlanId { get; set; }
@@ -19,5 +19,16 @@ namespace PaceMe.BlazorApp.Model
 
         [Required]
         public DateTime DateTime { get; set; }
+
+        public TrainingPlanActivity Clone()
+        {
+            return new TrainingPlanActivity {
+                TrainingPlanId = TrainingPlanId,
+                TrainingPlanActivityId = TrainingPlanActivityId,
+                Name = Name,
+                Completed = Completed,
+                DateTime = DateTime
+            };
+        }
     }
 }

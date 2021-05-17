@@ -15,31 +15,12 @@
 
 
 <Loading IsLoading="_loading">
-    <h1>Activity: @trainingPlanActivityEditForm.Name</h1>
+    <h1>Activity: @trainingPlanActivity.Name</h1>
     <NavLink class="button button-outline" href='@($"/trainingplan/{_trainingPlanId}")'>Back To Training Plan</NavLink>
-    <button class='button @(_displayEditor ? "button-outline" : "")' @onclick="@(e => _displayEditor = !_displayEditor)">Toggle Activity Editor</button>
-    <button class="button button-outline" @onclick="@(e => DeleteTrainingPlanActivity(trainingPlanActivityEditForm))">Delete</button>
-    @if(_displayEditor){
+    <button class='button' @onclick="() => ActivityEditForm.Open(trainingPlanActivity.Clone())">Toggle Activity Editor</button>
+    <button class="button button-outline" @onclick="@(e => DeleteTrainingPlanActivity(trainingPlanActivity))">Delete</button>
+    <PaceMe.BlazorApp.Shared.Forms.ActivityEditForm @ref="ActivityEditForm" OnEdit="HandleEditValidSubmit"></PaceMe.BlazorApp.Shared.Forms.ActivityEditForm>
 
-        <EditForm Model="@trainingPlanActivityEditForm" OnValidSubmit="@HandleEditValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <label>
-                Activity Name:
-                <InputText id="Name" @bind-Value="trainingPlanActivityEditForm.Name" />
-            </label>
-            <label>
-                Completed:
-                <InputCheckbox id="Completed" @bind-Value="trainingPlanActivityEditForm.Completed" />
-            </label>
-            <label>
-                Date:
-                <InputDate id="DateTime" @bind-Value="trainingPlanActivityEditForm.DateTime" />
-            </label>
-
-            <button class="button" type="submit">Update</button>
-        </EditForm>
-    }
     <hr/>
     <h2>Total time: @TimeFormatter.SecondsToTime(totalDuration)</h2>
     <div class="segment-list">
@@ -92,6 +73,9 @@
 
     private bool _loading { get; set; } = true;
 
+    private PaceMe.BlazorApp.Shared.Forms.ActivityEditForm ActivityEditForm { get; set; }
+
+
     private class SplitTime
     {
 
@@ -116,7 +100,7 @@
     }
 
     private TrainingPlan trainingPlan = new TrainingPlan();    
-    private TrainingPlanActivity trainingPlanActivityEditForm = new TrainingPlanActivity();
+    private TrainingPlanActivity trainingPlanActivity = new TrainingPlanActivity();
     private TrainingPlanActivitySegment segmentCreateForm = new TrainingPlanActivitySegment();
 
     private IEnumerable<TrainingPlanActivitySegment> _segments = new List<TrainingPlanActivitySegment>();
@@ -133,19 +117,20 @@
         var user = authState.User;
 
         trainingPlan = await _trainingPlanService.GetTrainingPlan(user.GetMsalUserId(), _trainingPlanId);
-        trainingPlanActivityEditForm = await _trainingPlanActivityService.GetTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
+        trainingPlanActivity = await _trainingPlanActivityService.GetTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
         _loading = false;
     }
     
 
-    private async Task HandleEditValidSubmit()
+    private async Task HandleEditValidSubmit(TrainingPlanActivity activity)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        await _trainingPlanActivityService.UpdateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, trainingPlanActivityEditForm);
-
+        await _trainingPlanActivityService.UpdateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, activity);
+        
+        trainingPlanActivity = activity;
     }
 
     private async Task HandleCreateValidSubmit()
