@@ -7,34 +7,20 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using PaceMe.BlazorApp.Utilities
+@using Shared.Forms
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ITrainingPlanService _trainingPlanService
 @inject ITrainingPlanActivityService _trainingPlanActivityService
 
 
 <Loading IsLoading="_loading">
-    <h1>Training Plan: @trainingPlanEditForm.Name</h1>
+    <h1>Training Plan: @trainingPlan.Name</h1>
 
     <NavLink class="button button-outline" href="/trainingplans">Back To Training Plans</NavLink>
 
-    <button class='button @(_displayEditor ? "button-outline" : "")' @onclick=@(e => _displayEditor = !_displayEditor)>Edit Training Plan</button>
-    @if(_displayEditor){
-        <EditForm Model="@trainingPlanEditForm" OnValidSubmit="@HandleEditValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    <PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm @ref="trainingPlanEditForm" OnEdit="HandleEditValidSubmit"></PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm>
+    <button class='button' @onclick="() => trainingPlanEditForm.Open(trainingPlan.Clone())">Edit Training Plan</button>
 
-            <label>
-                Name:
-                <InputText id="Name" @bind-Value="trainingPlanEditForm.Name" />
-            </label>
-            <label>
-                Active:
-                <InputCheckbox id="Active" @bind-Value="trainingPlanEditForm.Active" />
-            </label>
-
-            <button type="submit">Submit Edit</button>
-        </EditForm>
-    }
     <hr/>
     <h3>Activities</h3>
     <div class="activity-calendar-control">
@@ -91,7 +77,8 @@
 
     private PaceMe.BlazorApp.Shared.Forms.ActivityEditForm EditForm { get; set; }
 
-    private TrainingPlan trainingPlanEditForm = new TrainingPlan();
+    private TrainingPlanEditForm trainingPlanEditForm = new TrainingPlanEditForm();
+    private TrainingPlan trainingPlan = new TrainingPlan();
     private IEnumerable<TrainingPlanActivity> _trainingPlanActivities = new List<TrainingPlanActivity>();
 
     private DateTime viewingMonth;
@@ -120,30 +107,30 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        trainingPlanEditForm = await _trainingPlanService.GetTrainingPlan(user.GetMsalUserId(), _trainingPlanId);
+        trainingPlan = await _trainingPlanService.GetTrainingPlan(user.GetMsalUserId(), _trainingPlanId);
         _trainingPlanActivities = await _trainingPlanActivityService.GetTrainingPlanActivities(user.GetMsalUserId(), _trainingPlanId);
         _loading = false;
     }
 
-    private async Task HandleEditValidSubmit()
+    private async Task HandleEditValidSubmit(TrainingPlan editedTrainingPlan)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        await _trainingPlanService.UpdateTrainingPlan(user.GetMsalUserId(), trainingPlanEditForm);
-
+        await _trainingPlanService.UpdateTrainingPlan(user.GetMsalUserId(), editedTrainingPlan);
+        trainingPlan = editedTrainingPlan;
     }
 
     private IEnumerable<TrainingPlanActivity> ActivitiesOnDay(DateTime day) {
         return _trainingPlanActivities.Where(x => x.DateTime.Date == day.Date);
     }
 
-    private async Task HandleCreateValidSubmit(TrainingPlanActivity trainingPlanActivityCreateForm)
+    private async Task HandleCreateValidSubmit(TrainingPlanActivity trainingPlanActivityCreate)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        await _trainingPlanActivityService.CreateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, trainingPlanActivityCreateForm);
+        await _trainingPlanActivityService.CreateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, trainingPlanActivityCreate);
         _trainingPlanActivities = await _trainingPlanActivityService.GetTrainingPlanActivities(user.GetMsalUserId(), _trainingPlanId);
     }
 }

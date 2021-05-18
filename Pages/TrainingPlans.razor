@@ -6,24 +6,14 @@
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @using PaceMe.BlazorApp.Utilities
+@using Shared.Forms
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ITrainingPlanService _trainingPlanService
 
 <h1>Training Plans</h1>
 
-<EditForm Model="@editForm" OnValidSubmit="@HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    <label>
-        Plan Name:
-        <InputText id="name" @bind-Value="editForm.Name" />
-    </label>
-    <label>
-        Active:
-        <InputCheckbox id="Active" @bind-Value="editForm.Active" />
-    </label>
-    <button type="submit" disabled=@_loading>Create</button>
-</EditForm>
+<PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm @ref="editForm" OnEdit="HandleValidSubmit"></PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm>
+<button class='button' @onclick="() => editForm.Open()">Create New</button>
 
 <hr/>
 <h3>Training Plans</h3>
@@ -32,8 +22,7 @@
     <tr>
       <th>Name</th>
       <th>Active</th>
-      <th>Details</th>
-      <th>Delete</th>
+      <th>Actions</th>
     </tr>
   </thead>
   <Loading IsLoading="_loading">
@@ -42,8 +31,10 @@
       <tr>
           <td>@plan.Name</td>
           <td>@(plan.Active ? "Active" : "Inactive")</td>
-          <td><NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink></td>
-          <td><button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button></td>
+          <td>
+            <NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink>
+            <button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button>
+          </td>
       </tr>
       }
     </tbody>
@@ -53,7 +44,7 @@
     private IReadOnlyList<TrainingPlan> _trainingPlans = new List<TrainingPlan>();
     private bool _loading = true;
 
-    private TrainingPlan editForm = new TrainingPlan();
+    private TrainingPlanEditForm editForm = new TrainingPlanEditForm();
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,13 +53,13 @@
         await GetTrainingPlans(user);
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleValidSubmit(TrainingPlan trainingPlan)
     {
         _loading = true;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        await _trainingPlanService.CreateTrainingPlan(user.GetMsalUserId(), editForm);
+        await _trainingPlanService.CreateTrainingPlan(user.GetMsalUserId(), trainingPlan);
         await GetTrainingPlans(user);
 
     }
