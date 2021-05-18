@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PaceMe.BlazorApp.Model
 {
-    public class TrainingPlanActivitySegment
+    public class TrainingPlanActivitySegment : ITypedClone<TrainingPlanActivitySegment>
     {
         [Required]
         public Guid TrainingPlanActivityId { get; set; }
@@ -15,5 +15,17 @@ namespace PaceMe.BlazorApp.Model
         [Required]
         [StringLength(250, ErrorMessage = "Notes are too long.")]
         public string Notes { get; set; }
+
+        public TrainingPlanActivitySegment Clone()
+        {
+            return new TrainingPlanActivitySegment
+            {
+                TrainingPlanActivityId = TrainingPlanActivityId,
+                TrainingPlanActivitySegmentId = TrainingPlanActivitySegmentId,
+                Order = Order,
+                DurationSeconds = DurationSeconds,
+                Notes = Notes
+            };
+        }
     }
 }

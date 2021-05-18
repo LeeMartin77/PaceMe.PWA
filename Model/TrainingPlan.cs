@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PaceMe.BlazorApp.Model
 {
-    public class TrainingPlan
+    public class TrainingPlan : ITypedClone<TrainingPlan>
     {
         public Guid UserId { get; set; }
         public Guid TrainingPlanId { get; set; }
@@ -12,5 +12,16 @@ namespace PaceMe.BlazorApp.Model
         [StringLength(250, ErrorMessage = "Name is too long.")]
         public string Name { get; set; }
         public bool Active { get; set; }
+
+        public TrainingPlan Clone()
+        {
+            return new TrainingPlan 
+            {
+                UserId = UserId,
+                TrainingPlanId = TrainingPlanId,
+                Name = Name,
+                Active = Active
+            };
+        }
     }
 }
