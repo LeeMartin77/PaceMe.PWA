@@ -1,7 +1,16 @@
 @page "/authentication/{action}"
 @layout AnonymousLayout
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-<RemoteAuthenticatorView Action="@Action" />
+<RemoteAuthenticatorView Action="@Action">
+    <LogOutSucceeded>
+        <div class="flex-wrapper full-height">
+            <div class="card">
+                <span style="text-align: center; margin: 1em;display: block;">You have been logged out.</span>
+                <NavLink class="button block-button" href="/">Return to Login</NavLink>
+            </div>
+        </div>
+    </LogOutSucceeded>
+</RemoteAuthenticatorView>
 
 @code{
     [Parameter] public string Action { get; set; }

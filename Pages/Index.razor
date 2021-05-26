@@ -14,14 +14,17 @@
         <Loading IsLoading="_loading">
             @if(_nextActivity != null)
             {
-                <div>
-                    <h2>@_nextActivity.Name</h2>
-                    <p>@_nextActivity.DateTime.Date.ToString("yyyy-MM-dd") | @QuickTimeTilNextActivity()</p>
-                    <p>@TimeFormatter.SecondsToTime(_nextActivitySegments.Sum(x => x.DurationSeconds)) Duration</p>
-                    @if(_nextActivity.DateTime.Date == DateTime.Now.Date){
-                        <button class="button" @onclick="@(e => CompleteNextActivity())">Complete</button>
-                    }
-                    <NavLink class="button button-outline" href='@($"/trainingplan/{_nextActivity.TrainingPlanId}/activity/{_nextActivity.TrainingPlanActivityId}")'>Detail</NavLink>
+                <div class="flex-wrapper">
+
+                    <div class="card">
+                        <h2>@_nextActivity.Name</h2>
+                        <h3>@TimeFormatter.SecondsToTime(_nextActivitySegments.Sum(x => x.DurationSeconds)) Total</h3>
+                        <p>@_nextActivity.DateTime.Date.ToString("yyyy-MM-dd") | @QuickTimeTilNextActivity()</p>
+                        @if(_nextActivity.DateTime.Date == DateTime.Now.Date){
+                            <button class="button block-button" @onclick="@(e => CompleteNextActivity())">Complete</button>
+                        }
+                        <NavLink class="button button-outline block-button" href='@($"/trainingplan/{_nextActivity.TrainingPlanId}/activity/{_nextActivity.TrainingPlanActivityId}")'>Detail</NavLink>
+                    </div>
                 </div>
             }
             else

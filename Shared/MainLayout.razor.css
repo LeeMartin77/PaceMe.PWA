@@ -14,7 +14,7 @@
 .login-card {
     width: 24rem;
     padding: 1rem;
-    border: 1px solid #aaa;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
     background-color: #fff;
     border-radius: 1rem;
     text-align: center;

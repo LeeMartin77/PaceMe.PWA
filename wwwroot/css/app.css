@@ -47,3 +47,30 @@
     float: left;
     display: block;
 }
+
+.flex-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.flex-wrapper.full-height {
+    height: 100vh;
+}
+
+.card {
+    min-width: 300px;
+    max-width: 90%;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
+    border-radius: 1rem;
+    text-align: center;
+}
+
+.block-button {
+    display: block;
+    width: 100%;
+}
