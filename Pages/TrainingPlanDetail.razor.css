@@ -17,7 +17,7 @@
 }
 
 .activity-calendar-row:nth-child(2n) {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(255,255,255,0.1);
 }
 
 .activity-calendar-header {
@@ -34,7 +34,7 @@
 }
 
 .activity-calendar-cell:nth-child(2n){
-    background-color: rgba(0,0,0,0.05);
+    background-color: rgba(255,255,255,0.05);
 }
 
 .activity-calendar-cell {

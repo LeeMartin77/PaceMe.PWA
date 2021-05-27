@@ -1,4 +1,15 @@
+html, body {
+    background-color: #222;
+    color: #fff;
+}
 
+input {
+    color: #fff;
+}
+
+a {
+    color: #d199f2;
+}
 
 #blazor-error-ui {
     background: lightyellow;
@@ -38,7 +49,8 @@
     max-width: 90vw;
     padding: 2rem;
     border-radius: 1rem;
-    background-color: #FFF;
+    background-color: #222;
+    color: #fff;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 
@@ -64,7 +76,8 @@
     min-width: 300px;
     max-width: 90%;
     padding: 1rem;
-    background-color: #fff;
+    background-color: #222;
+    color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
     border-radius: 1rem;
     text-align: center;

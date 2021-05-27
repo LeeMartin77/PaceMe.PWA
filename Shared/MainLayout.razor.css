@@ -15,7 +15,8 @@
     width: 24rem;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
-    background-color: #fff;
+    background-color: #222;
+    color: #fff;
     border-radius: 1rem;
     text-align: center;
 }
