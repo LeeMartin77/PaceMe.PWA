@@ -51,9 +51,9 @@
     padding: 0 5%;
     width: 95%;
     margin: 0 2.5% 0.4rem 2.5%;
-    background-color: #9b4dca;
+    background-color: #531c9b;
     border-radius: 0.25rem;
-    color: white;
+    color: #fff;
     text-align: center;
     float: left;
     clear: both;
@@ -64,7 +64,7 @@
 
 .calendar-activity.completed-calendar-activity
 {
-    color: #9b4dca;
-    background-color: white;
-    border: 1px solid #9b4dca;
+    color: #fff;
+    background-color: #1b5f32;
+    border: 1px solid #22c558;
 }

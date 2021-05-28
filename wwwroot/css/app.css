@@ -8,7 +8,26 @@ input {
 }
 
 a {
-    color: #d199f2;
+    color: #fff;
+}
+
+hr {
+    border-top-color: #666;
+}
+
+th, td {
+    border-bottom-color: #666;
+}
+
+button, .button {
+    background-color: #fff;
+    color: #222;
+    border: #fff;
+}
+
+.button-outline, .button.button-outline, button.button-outline {
+    color: #fff;
+    border: 1px solid #fff;
 }
 
 #blazor-error-ui {
