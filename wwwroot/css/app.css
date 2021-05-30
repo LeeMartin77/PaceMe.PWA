@@ -1,5 +1,5 @@
 html, body {
-    background-color: #222;
+    background-color: #444;
     color: #fff;
 }
 
@@ -21,7 +21,7 @@ th, td {
 
 button, .button {
     background-color: #fff;
-    color: #222;
+    color: #444;
     border: #fff;
 }
 
@@ -68,7 +68,7 @@ button, .button {
     max-width: 90vw;
     padding: 2rem;
     border-radius: 1rem;
-    background-color: #222;
+    background-color: #444;
     color: #fff;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
@@ -96,7 +96,7 @@ button, .button {
     min-width: 300px;
     max-width: 90%;
     padding: 1rem;
-    background-color: #222;
+    background-color: #444;
     color: #fff;
     box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
     border-radius: 1rem;
