@@ -11,6 +11,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ITrainingPlanService _trainingPlanService
 @inject ITrainingPlanActivityService _trainingPlanActivityService
+@inject NavigationManager NavigationManager
 
 
 <Loading IsLoading="_loading">
@@ -20,6 +21,7 @@
 
     <PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm @ref="trainingPlanEditForm" OnEdit="HandleEditValidSubmit"></PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm>
     <button class='button' @onclick="() => trainingPlanEditForm.Open(trainingPlan.Clone())">Edit Training Plan</button>
+    <button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(trainingPlan))">Delete</button>
 
     <hr/>
     <h3>Activities</h3>
@@ -132,5 +134,16 @@
 
         await _trainingPlanActivityService.CreateTrainingPlanActivity(user.GetMsalUserId(), _trainingPlanId, trainingPlanActivityCreate);
         _trainingPlanActivities = await _trainingPlanActivityService.GetTrainingPlanActivities(user.GetMsalUserId(), _trainingPlanId);
+    }
+
+
+    private async Task DeleteTrainingPlan(TrainingPlan plan)
+    {
+        _loading = true;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        await _trainingPlanService.DeleteTrainingPlan(user.GetMsalUserId(), plan.TrainingPlanId);
+        NavigationManager.NavigateTo("/trainingplans");
     }
 }

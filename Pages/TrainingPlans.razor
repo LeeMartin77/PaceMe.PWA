@@ -14,32 +14,18 @@
 
 <PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm @ref="editForm" OnEdit="HandleValidSubmit"></PaceMe.BlazorApp.Shared.Forms.TrainingPlanEditForm>
 <button class='button' @onclick="() => editForm.Open()">Create New</button>
-
 <hr/>
-<h3>Training Plans</h3>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Active</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <Loading IsLoading="_loading">
-    <tbody>
+<Loading IsLoading="_loading">
+  <div class="flex-wrapper">
       @foreach(var plan in _trainingPlans){
-      <tr>
-          <td>@plan.Name</td>
-          <td>@(plan.Active ? "Active" : "Inactive")</td>
-          <td>
-            <NavLink class="button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink>
-            <button class="button button-outline" @onclick="@(e => DeleteTrainingPlan(plan))">Delete</button>
-          </td>
-      </tr>
+        <div class="card">
+          <h4>@plan.Name</h4>
+          <span>@(plan.Active ? "Active" : "Inactive")</span>
+          <NavLink class="button block-button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink>
+        </div>
       }
-    </tbody>
-  </Loading>
-</table>
+  </div>
+</Loading>
 @code {
     private IReadOnlyList<TrainingPlan> _trainingPlans = new List<TrainingPlan>();
     private bool _loading = true;
@@ -60,17 +46,6 @@
         var user = authState.User;
 
         await _trainingPlanService.CreateTrainingPlan(user.GetMsalUserId(), trainingPlan);
-        await GetTrainingPlans(user);
-
-    }
-
-    private async Task DeleteTrainingPlan(TrainingPlan plan)
-    {
-        _loading = true;
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        await _trainingPlanService.DeleteTrainingPlan(user.GetMsalUserId(), plan.TrainingPlanId);
         await GetTrainingPlans(user);
 
     }
