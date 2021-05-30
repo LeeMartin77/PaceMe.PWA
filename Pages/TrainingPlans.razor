@@ -18,9 +18,8 @@
 <Loading IsLoading="_loading">
   <div class="flex-wrapper">
       @foreach(var plan in _trainingPlans){
-        <div class="card">
-          <h4>@plan.Name</h4>
-          <span>@(plan.Active ? "Active" : "Inactive")</span>
+        <div class='card @(plan.Active ? "active-plan" : "")'>
+          <h4 style="margin-bottom: 0.5em">@plan.Name</h4>
           <NavLink class="button block-button" href='@("/trainingplan/" + plan.TrainingPlanId.ToString())'>Detail</NavLink>
         </div>
       }
