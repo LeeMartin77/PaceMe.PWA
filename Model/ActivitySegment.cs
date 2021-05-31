@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace PaceMe.BlazorApp.Model
 {
@@ -27,7 +28,7 @@ namespace PaceMe.BlazorApp.Model
                 Order = Order,
                 Name = Name,
                 Repetitions = Repetitions,
-                Intervals = Intervals
+                Intervals = Intervals.Select(i => i.Clone()).ToList()
             };
         }
     }

@@ -30,8 +30,8 @@
                 <button class="button-outline segment-control-button" @onclick="@(e => DeleteSegment(segment))">Delete</button>
                 <button class="button-outline segment-control-button" @onclick="@(e => DuplicateSegment(segment))">Duplicate</button>
             </div>
-            <div class="segment-notes">@segment.Notes</div>
-            <div class="segment-time">@TimeFormatter.SecondsToTime(segment.DurationSeconds)</div>
+            <div class="segment-notes">@segment.Name</div>
+            <div class="segment-time">@TimeFormatter.SecondsToTime(segment.Repetitions * segment.Intervals.Sum(x => x.DurationSeconds))</div>
         </div>
         }
         <div class="segment create-segment">
@@ -39,8 +39,8 @@
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <label>
-                    Notes:
-                    <InputText id="Notes" @bind-Value="segmentCreateForm.Notes" />
+                    Name:
+                    <InputText id="Name" @bind-Value="segmentCreateForm.Name" />
 
                 </label>
                 <label>
@@ -93,7 +93,7 @@
     private int totalDuration { get {
             if(_segments.Any())
             {
-                return _segments.Select(x => x.DurationSeconds).Sum();
+                return _segments.Select(segment => segment.Repetitions * segment.Intervals.Sum(x => x.DurationSeconds)).Sum();
             }
             return 0;
         }
@@ -143,7 +143,16 @@
         else {
             segmentCreateForm.Order = 1;
         }
-        segmentCreateForm.DurationSeconds = Duration.Seconds + (Duration.Minutes * 60);
+        segmentCreateForm.ActivityId = trainingPlanActivity.TrainingPlanActivityId;
+        segmentCreateForm.Repetitions = 1;
+        segmentCreateForm.Intervals = new List<SegmentInterval> { 
+            new SegmentInterval 
+            {
+                Note = "Interval",
+                Order = 1,
+                DurationSeconds = Duration.Seconds + (Duration.Minutes * 60) 
+            }
+        };
         await _trainingPlanActivitySegmentService.CreateTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segmentCreateForm);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
         segmentCreateForm = new ActivitySegment();
@@ -154,10 +163,11 @@
     {
         var newSegment = new ActivitySegment 
         {
-            TrainingPlanActivityId = segment.TrainingPlanActivityId,
+            ActivityId = segment.ActivityId,
             Order = _segments.Select(x => x.Order).Max() + 1,
-            DurationSeconds = segment.DurationSeconds,
-            Notes = segment.Notes
+            Name = segment.Name,
+            Repetitions = segment.Repetitions,
+            Intervals = segment.Intervals.Select(i => i.Clone()).ToList()
         };
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
@@ -170,14 +180,14 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        _segments = _segments.Where(x => x.TrainingPlanActivitySegmentId != segment.TrainingPlanActivitySegmentId);
+        _segments = _segments.Where(x => x.ActivitySegmentId != segment.ActivitySegmentId);
         var highersegments = _segments.Where(x => x.Order > segment.Order).ToList();
         var tasks = highersegments.Select(x => 
             {
                 x.Order = x.Order - 1; 
                 return _trainingPlanActivitySegmentService.UpdateTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, x);
             });
-        tasks = tasks.Append(_trainingPlanActivitySegmentService.DeleteTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segment.TrainingPlanActivitySegmentId));
+        tasks = tasks.Append(_trainingPlanActivitySegmentService.DeleteTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segment.ActivitySegmentId));
         await Task.WhenAll(tasks);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
     }
