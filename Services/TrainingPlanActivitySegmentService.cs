@@ -13,35 +13,35 @@ namespace PaceMe.BlazorApp.Services
 {
     public interface ITrainingPlanActivitySegmentService
     {
-        Task<List<TrainingPlanActivitySegment>> GetTrainingPlanActivitySegments(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId);
-        Task<TrainingPlanActivitySegment> GetTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId);
-        Task<Guid> CreateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, TrainingPlanActivitySegment create);
-        Task UpdateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, TrainingPlanActivitySegment update);
+        Task<List<ActivitySegment>> GetTrainingPlanActivitySegments(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId);
+        Task<ActivitySegment> GetTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId);
+        Task<Guid> CreateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, ActivitySegment create);
+        Task UpdateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, ActivitySegment update);
         Task DeleteTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId);
     }
 
-    public class TrainingPlanActivitySegmentService : BasePacemeApiClient<TrainingPlanActivitySegment>, ITrainingPlanActivitySegmentService
+    public class TrainingPlanActivitySegmentService : BasePacemeApiClient<ActivitySegment>, ITrainingPlanActivitySegmentService
     {
         public TrainingPlanActivitySegmentService(IHttpClientFactory clientFactory) : base(clientFactory){}
 
-        public async Task<List<TrainingPlanActivitySegment>> GetTrainingPlanActivitySegments(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId)
+        public async Task<List<ActivitySegment>> GetTrainingPlanActivitySegments(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId)
         {
             return await GetMany($"/api/user/{userId}/TrainingPlan/{TrainingPlanId}/Activity/{TrainingPlanActivityId}/segment");
         }
 
-        public async Task<TrainingPlanActivitySegment> GetTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId)
+        public async Task<ActivitySegment> GetTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId)
         {
             return await Get($"/api/user/{userId}/TrainingPlan/{TrainingPlanId}/Activity/{TrainingPlanActivityId}/segment/{TrainingPlanActivitySegmentId}");
         }
 
-        public async Task<Guid> CreateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, TrainingPlanActivitySegment create)
+        public async Task<Guid> CreateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, ActivitySegment create)
         {
             return await Create($"/api/user/{userId}/TrainingPlan/{TrainingPlanId}/Activity/{TrainingPlanActivityId}/segment", create);
         }
 
-        public async Task UpdateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, TrainingPlanActivitySegment update)
+        public async Task UpdateTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, ActivitySegment update)
         {
-            await Update($"/api/user/{userId}/TrainingPlan/{TrainingPlanId}/Activity/{TrainingPlanActivityId}/segment/{update.TrainingPlanActivitySegmentId}", update);
+            await Update($"/api/user/{userId}/TrainingPlan/{TrainingPlanId}/Activity/{TrainingPlanActivityId}/segment/{update.ActivitySegmentId}", update);
         }
 
         public async Task DeleteTrainingPlanActivitySegment(string userId, Guid TrainingPlanId, Guid TrainingPlanActivityId, Guid TrainingPlanActivitySegmentId)

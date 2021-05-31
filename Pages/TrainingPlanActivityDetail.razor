@@ -101,9 +101,9 @@
 
     private TrainingPlan trainingPlan = new TrainingPlan();    
     private TrainingPlanActivity trainingPlanActivity = new TrainingPlanActivity();
-    private TrainingPlanActivitySegment segmentCreateForm = new TrainingPlanActivitySegment();
+    private ActivitySegment segmentCreateForm = new ActivitySegment();
 
-    private IEnumerable<TrainingPlanActivitySegment> _segments = new List<TrainingPlanActivitySegment>();
+    private IEnumerable<ActivitySegment> _segments = new List<ActivitySegment>();
 
     private string DisplayTime(int seconds){
         return $"{(seconds / 60)}:{(seconds % 60):00}";
@@ -146,13 +146,13 @@
         segmentCreateForm.DurationSeconds = Duration.Seconds + (Duration.Minutes * 60);
         await _trainingPlanActivitySegmentService.CreateTrainingPlanActivitySegment(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId, segmentCreateForm);
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
-        segmentCreateForm = new TrainingPlanActivitySegment();
+        segmentCreateForm = new ActivitySegment();
         Duration = new SplitTime();
     }
 
-    private async Task DuplicateSegment(TrainingPlanActivitySegment segment)
+    private async Task DuplicateSegment(ActivitySegment segment)
     {
-        var newSegment = new TrainingPlanActivitySegment 
+        var newSegment = new ActivitySegment 
         {
             TrainingPlanActivityId = segment.TrainingPlanActivityId,
             Order = _segments.Select(x => x.Order).Max() + 1,
@@ -166,7 +166,7 @@
         _segments = await _trainingPlanActivitySegmentService.GetTrainingPlanActivitySegments(user.GetMsalUserId(), _trainingPlanId, _trainingPlanActivityId);
     }
 
-    private async Task DeleteSegment(TrainingPlanActivitySegment segment)
+    private async Task DeleteSegment(ActivitySegment segment)
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;

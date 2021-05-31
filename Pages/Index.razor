@@ -18,7 +18,7 @@
 
                     <div class="card">
                         <h2>@_nextActivity.Name</h2>
-                        <h3>@TimeFormatter.SecondsToTime(_nextActivitySegments.Sum(x => x.DurationSeconds)) Total</h3>
+                        <h3>@TimeFormatter.SecondsToTime(_nextActivitySegments.Sum(x => x.Repetitions * x.Intervals.Sum(i => i.DurationSeconds))) Total</h3>
                         <p>@_nextActivity.DateTime.Date.ToString("yyyy-MM-dd") | @QuickTimeTilNextActivity()</p>
                         @if(_nextActivity.DateTime.Date == DateTime.Now.Date){
                             <button class="button block-button" @onclick="@(e => CompleteNextActivity())">Complete</button>
@@ -41,7 +41,7 @@
 @code {
     private TrainingPlanActivity _nextActivity = null;
     private bool _loading = true;
-    private IEnumerable<TrainingPlanActivitySegment> _nextActivitySegments = new List<TrainingPlanActivitySegment>();
+    private IEnumerable<ActivitySegment> _nextActivitySegments = new List<ActivitySegment>();
     private ClaimsPrincipal _user;
 
     protected override async Task OnInitializedAsync()
