@@ -1,0 +1,17 @@
+.interval-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.interval {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
+    background-color: #444;
+    color: #fff;
+    border-radius: 1rem;
+    margin: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    position: relative;
+}

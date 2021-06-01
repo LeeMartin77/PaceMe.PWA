@@ -1,5 +1,6 @@
 @using Model
 @using System.ComponentModel.DataAnnotations
+@using Utilities
 @if (_showModal) 
 {
     <div class="modal-backdrop">
@@ -11,21 +12,42 @@
                     <label>
                         Name:
                         <InputText id="Name" @bind-Value="activitySegmentEditForm.Name" />
+                    </label>
 
+                    <label>
+                        Repetitions:
+                        <InputNumber @bind-Value="activitySegmentEditForm.Repetitions" />
                     </label>
                     <label>
-                        Duration:
+                        Intervals:
                     </label>
-                    <div class="time-input-wrapper">
-                        <div class="time-input">
-                            <InputNumber @bind-Value="Duration.Minutes" />
+                    <div class="interval-list">
+                    @foreach (var interval in activitySegmentEditForm.Intervals)
+                    {
+                        
+                        <div class="interval">
+                            <h3>@TimeFormatter.SecondsToTime(interval.DurationSeconds)</h3>
+                            <span>@interval.Note</span>
                         </div>
-                        <div class="time-input">
-                            <InputNumber @bind-Value="Duration.Seconds" />
+                    }
+                        <div class="interval">
+                            <label>
+                                Interval Note:
+                                <InputText id="IntervalNote" @bind-Value="IntervalNote" />
+                            </label>
+                            <div class="time-input-wrapper">
+                                <div class="time-input">
+                                    <InputNumber @bind-Value="Duration.Minutes" />
+                                </div>
+                                <div class="time-input">
+                                    <InputNumber @bind-Value="Duration.Seconds" />
+                                </div>
+                                <button class="button" type="button" @onclick="AddInterval">Add</button>
+                            </div>
                         </div>
                     </div>
                     <button class="button" type="submit">@ButtonText</button>
-                    <button class="button button-outline" @onclick="Close">Dismiss</button>
+                    <button class="button button-outline" type="button" @onclick="Close">Dismiss</button>
                 </EditForm>
             </div>
         </div>
@@ -55,6 +77,8 @@
 
     private string ButtonText = "Submit";
 
+    private string IntervalNote = null;
+
     private bool _showModal = false;
 
     public void Open()
@@ -73,19 +97,21 @@
 
     private void HandleValidSubmit()
     {        
-        activitySegmentEditForm.Repetitions = 1;
-        activitySegmentEditForm.Intervals = new List<SegmentInterval> { 
-            new SegmentInterval 
-            {
-                Note = "Interval",
-                Order = 1,
-                DurationSeconds = Duration.Seconds + (Duration.Minutes * 60) 
-            }
-        };
         OnEdit.InvokeAsync(activitySegmentEditForm);
         Close();
     }
 
+    public void AddInterval()
+    {
+        activitySegmentEditForm.Intervals.Add(new SegmentInterval 
+            {
+                Note = IntervalNote,
+                Order = activitySegmentEditForm.Intervals.Count() + 1,
+                DurationSeconds = Duration.Seconds + (Duration.Minutes * 60) 
+            });
+        IntervalNote = null;
+        Duration = new SplitTime();
+    }
     public void Close()
     {
         _showModal = false;
