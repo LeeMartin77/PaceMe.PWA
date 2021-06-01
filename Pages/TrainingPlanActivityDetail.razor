@@ -167,7 +167,7 @@
             Order = _segments.Select(x => x.Order).Max() + 1,
             Name = segment.Name,
             Repetitions = segment.Repetitions,
-            Intervals = segment.Intervals.Select(i => i.Clone()).ToList()
+            Intervals = segment.Intervals.Select(i => i.NewCopy()).ToList()
         };
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;

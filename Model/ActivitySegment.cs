@@ -60,5 +60,15 @@ namespace PaceMe.BlazorApp.Model
                 DurationSeconds = DurationSeconds
             };
         }
+
+        public SegmentInterval NewCopy()
+        {
+            return new SegmentInterval 
+            {
+                Note = Note,
+                Order = Order,
+                DurationSeconds = DurationSeconds
+            };
+        }
     }
 }
