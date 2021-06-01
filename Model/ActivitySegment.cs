@@ -15,7 +15,10 @@ namespace PaceMe.BlazorApp.Model
         [StringLength(250, ErrorMessage = "Name is too long.")]
         public string Name { get; set; }
         public int Order { get; set; }
-        public int Repetitions { get; set; }
+        
+        [Required]
+        [Range(1, Int32.MaxValue, ErrorMessage = "The field {0} must be greater than {1}.")]
+        public int Repetitions { get; set; } = 1;
         public List<SegmentInterval> Intervals { get; set; } = new List<SegmentInterval>();
 
 

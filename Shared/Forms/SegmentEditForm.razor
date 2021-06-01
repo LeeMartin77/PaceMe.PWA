@@ -26,8 +26,12 @@
                     {
                         
                         <div class="interval">
-                            <h3>@TimeFormatter.SecondsToTime(interval.DurationSeconds)</h3>
-                            <span>@interval.Note</span>
+                            <span class="interval-time">@TimeFormatter.SecondsToTime(interval.DurationSeconds)</span>
+                            <span class="interval-notes">@interval.Note</span>
+                            <div class="interval-controls">
+
+                                <button class="button interval-controls-button" type="button" @onclick="(e =>  DeleteInterval(interval))">Delete</button>
+                            </div>
                         </div>
                     }
                         <div class="interval">
@@ -112,6 +116,17 @@
         IntervalNote = null;
         Duration = new SplitTime();
     }
+
+
+    public void DeleteInterval(SegmentInterval interval)
+    {
+        activitySegmentEditForm.Intervals.Remove(interval);
+        int newOrder = 1;
+        activitySegmentEditForm.Intervals.ForEach(i =>{i.Order = newOrder; newOrder++;});
+        IntervalNote = null;
+        Duration = new SplitTime();
+    }
+
     public void Close()
     {
         _showModal = false;

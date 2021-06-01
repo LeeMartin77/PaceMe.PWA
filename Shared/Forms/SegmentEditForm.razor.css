@@ -7,11 +7,46 @@
 }
 
 .interval {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.16), 0 2px 4px rgba(0,0,0,0.23);
     background-color: #444;
     color: #fff;
     border-radius: 1rem;
-    margin: 0.5rem;
-    padding: 0.5rem 1.5rem;
+    margin: 0.5rem 0;
+    padding: 0.5rem 1rem;
     position: relative;
+    border: 1px solid #fff
+}
+
+
+.interval-controls {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.interval-controls .interval-control-button {
+    font-size: 0.9rem;
+    padding: 0.8rem 1.6rem;
+    line-height: 0;
+}
+
+.interval-notes {
+    float:left;
+    clear:right;
+    width: calc(100% - 14rem);
+}
+
+.interval-time {
+    float: left;
+    clear: right;
+    width: 100%;
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.time-input-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+.time-input {
+    width: 12rem;
 }
