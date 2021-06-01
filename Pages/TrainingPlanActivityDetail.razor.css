@@ -44,6 +44,9 @@
 
 .segment.create-segment {
     border: 1px dashed #999;
+    line-height: 0em;
+    padding: 1.5rem 1.5rem;
+    height: 6rem;
 }
 
 .time-input-wrapper {

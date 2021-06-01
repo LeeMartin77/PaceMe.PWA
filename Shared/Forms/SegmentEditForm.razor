@@ -1,0 +1,93 @@
+@using Model
+@using System.ComponentModel.DataAnnotations
+@if (_showModal) 
+{
+    <div class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-content">
+                <EditForm Model="@activitySegmentEditForm" OnValidSubmit="@HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <label>
+                        Name:
+                        <InputText id="Name" @bind-Value="activitySegmentEditForm.Name" />
+
+                    </label>
+                    <label>
+                        Duration:
+                    </label>
+                    <div class="time-input-wrapper">
+                        <div class="time-input">
+                            <InputNumber @bind-Value="Duration.Minutes" />
+                        </div>
+                        <div class="time-input">
+                            <InputNumber @bind-Value="Duration.Seconds" />
+                        </div>
+                    </div>
+                    <button class="button" type="submit">@ButtonText</button>
+                    <button class="button button-outline" @onclick="Close">Dismiss</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+
+    private class SplitTime
+    {
+
+        [Range(0, Int32.MaxValue, ErrorMessage = "Minutes must be greater than 0.")]
+        public int Minutes { get; set; } = 0;
+
+
+        [Range(0, 60, ErrorMessage = "Seconds must be between 0 and 60.")]
+        public int Seconds { get; set; } = 0;
+    }
+
+    private SplitTime Duration = new SplitTime();
+
+    private ActivitySegment activitySegmentEditForm = new ActivitySegment();
+
+    [Parameter] 
+    public EventCallback<ActivitySegment> OnEdit { get; set; }
+
+    private string ButtonText = "Submit";
+
+    private bool _showModal = false;
+
+    public void Open()
+    {
+        activitySegmentEditForm = new ActivitySegment();
+        Duration = new SplitTime();
+
+        ButtonText = "Create";
+        ShowModal();
+    }
+
+    private void ShowModal()
+    {
+        _showModal = true;
+    }
+
+    private void HandleValidSubmit()
+    {        
+        activitySegmentEditForm.Repetitions = 1;
+        activitySegmentEditForm.Intervals = new List<SegmentInterval> { 
+            new SegmentInterval 
+            {
+                Note = "Interval",
+                Order = 1,
+                DurationSeconds = Duration.Seconds + (Duration.Minutes * 60) 
+            }
+        };
+        OnEdit.InvokeAsync(activitySegmentEditForm);
+        Close();
+    }
+
+    public void Close()
+    {
+        _showModal = false;
+    }
+}
