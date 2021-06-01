@@ -31,6 +31,13 @@
 .segment-notes {
     float:left;
     clear:right;
+    font-weight: bold;
+    width: calc(100% - 14rem);
+}
+
+.segment-interval-notes {
+    float:left;
+    clear:right;
     width: calc(100% - 14rem);
 }
 

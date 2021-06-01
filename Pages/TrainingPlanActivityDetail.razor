@@ -29,7 +29,13 @@
                 <button class="button-outline segment-control-button" @onclick="@(e => DeleteSegment(segment))">Delete</button>
                 <button class="button-outline segment-control-button" @onclick="@(e => DuplicateSegment(segment))">Duplicate</button>
             </div>
-            <div class="segment-notes">@segment.Name</div>
+            <div class="segment-notes">@segment.Name @if(segment.Repetitions > 1) { <span> x @segment.Repetitions</span> }</div>
+            @if(segment.Intervals.Count > 1){
+                <div class="segment-interval-notes">@string.Join(" | ", segment.Intervals.OrderBy(i => i.Order).Select(i => {return $"{TimeFormatter.SecondsToTime(i.DurationSeconds)}, {i.Note}";}))</div>
+            }
+            else if(segment.Intervals.Count == 1){
+                <div class="segment-interval-notes">@segment.Intervals.First().Note</div>
+            }
             <div class="segment-time">@TimeFormatter.SecondsToTime(segment.Repetitions * segment.Intervals.Sum(x => x.DurationSeconds))</div>
         </div>
         }
