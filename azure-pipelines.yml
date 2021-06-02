@@ -16,11 +16,6 @@ pool:
 
 steps:
 
-- task: UseDotNet@2
-  inputs:
-    version: '3.1.x'
-    packageType: sdk
-
 # Blazor Frontend
 - task: UseDotNet@2
   inputs:
@@ -30,7 +25,7 @@ steps:
 - task: FileTransform@2
   displayName: "Version Manifest"
   inputs:
-    folderPath: 'wwwroot'
+    folderPath: 'PaceMe.BlazorApp/wwwroot'
     xmlTransformationRules: ''
     jsonTargetFiles: manifest.json
 
@@ -39,6 +34,7 @@ steps:
     command: 'publish'
     arguments: '--output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: False
+    workingDirectory: 'PaceMe.BlazorApp'
   displayName: 'Publish the Blazor App'
 
 - task: PublishBuildArtifacts@1
