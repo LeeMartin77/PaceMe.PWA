@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject IHttpClientFactory clientFactory
 
 <AuthorizeView>
     <Authorized>
@@ -17,8 +18,22 @@
                 <h5>Running Training Planner</h5>
                 <a class="button login-button" style="padding: 0 2rem" href="authentication/login">Please Log In</a>
             </div>
-        </main>
+        </main> 
     </NotAuthorized>
     
 </AuthorizeView>
 
+@code {
+    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        var user = (await AuthStat).User;
+        if(!user.Identity.IsAuthenticated)
+        {
+            var client = clientFactory.CreateClient("FunctionApiAnonymous");
+            _ = await client.GetAsync("/api/system/warmup");
+        }
+    }
+}
