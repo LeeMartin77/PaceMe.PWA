@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @inject IHttpClientFactory clientFactory
+@using PaceMe.BlazorApp.Properties
 
 <AuthorizeView>
     <Authorized>
@@ -32,7 +33,7 @@
         var user = (await AuthStat).User;
         if(!user.Identity.IsAuthenticated)
         {
-            var client = clientFactory.CreateClient("FunctionApiAnonymous");
+            var client = clientFactory.CreateClient(HttpClientNames.FunctionApiAnonymous);
             _ = await client.GetAsync("/api/system/warmup");
         }
     }
