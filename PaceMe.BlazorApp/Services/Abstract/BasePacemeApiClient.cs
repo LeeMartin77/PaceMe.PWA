@@ -18,7 +18,7 @@ namespace PaceMe.BlazorApp.Services
         private readonly HttpClient _httpClient;
 
         public BasePacemeApiClient(IHttpClientFactory clientFactory){
-            _httpClient = clientFactory.CreateClient("FunctionApi");
+            _httpClient = clientFactory.CreateClient(HttpClientNames.FunctionApi);
         }
 
         protected async Task<List<T>> GetMany(string url)

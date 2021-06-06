@@ -39,12 +39,18 @@ namespace PaceMe.BlazorApp
             // https://docs.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/additional-scenarios?view=aspnetcore-5.0
             builder.Services.AddScoped<PaceMeAuthorizationMessageHandler>();
 
-            builder.Services.AddHttpClient("FunctionApi", 
+            builder.Services.AddHttpClient(HttpClientNames.FunctionApiAnonymous, 
+                client => {client.BaseAddress = new Uri(functionApi);});
+
+            builder.Services.AddHttpClient(HttpClientNames.FunctionApi, 
                 client => {client.BaseAddress = new Uri(functionApi);})
                .AddHttpMessageHandler<PaceMeAuthorizationMessageHandler>();
 
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
-               .CreateClient("FunctionApi"));
+               .CreateClient(HttpClientNames.FunctionApiAnonymous));
+
+            builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
+               .CreateClient(HttpClientNames.FunctionApi));
 
             //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
