@@ -23,18 +23,3 @@
     </NotAuthorized>
     
 </AuthorizeView>
-
-@code {
-    [CascadingParameter] protected Task<AuthenticationState> AuthStat { get; set; }
-
-    protected async override Task OnInitializedAsync()
-    {
-        base.OnInitialized();
-        var user = (await AuthStat).User;
-        if(!user.Identity.IsAuthenticated)
-        {
-            var client = clientFactory.CreateClient(HttpClientNames.FunctionApiAnonymous);
-            _ = await client.GetAsync("/api/system/warmup");
-        }
-    }
-}
