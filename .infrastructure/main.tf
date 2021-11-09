@@ -15,12 +15,10 @@ terraform {
 
 variable "environment" {
   type = string
-  default = "localdev"
 }
 
 variable "domain_prefix" {
   type    = string
-  default = "localdev-app"
 }
 
 variable "regions" {
