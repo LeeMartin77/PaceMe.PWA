@@ -10,7 +10,7 @@
 			// Options
 			"INSTALL_NODE": "false",
 			"NODE_VERSION": "lts/*",
-			"INSTALL_AZURE_CLI": "false"
+			"INSTALL_AZURE_CLI": "true"
 		}
 	},
 
@@ -22,7 +22,10 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-dotnettools.csharp",
-		"ms-dotnettools.blazorwasm-companion"
+		"ms-dotnettools.blazorwasm-companion",
+		"formulahendry.dotnet-test-explorer",
+		"ms-vscode-remote.remote-containers",
+		"hashicorp.terraform"
 	],
 
 	"forwardPorts": [5000, 5001],

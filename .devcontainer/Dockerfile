@@ -21,3 +21,6 @@ RUN if [ "$INSTALL_AZURE_CLI" = "true" ]; then bash /tmp/library-scripts/azcli-d
 
 # [Optional] Uncomment this line to install global node packages.
 # RUN su vscode -c "source /usr/local/share/nvm/nvm.sh && npm install -g <your-package-here>" 2>&1
+
+COPY library-scripts/terraform.sh /tmp/library-scripts/
+RUN /tmp/library-scripts/terraform.sh
