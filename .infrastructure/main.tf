@@ -96,16 +96,26 @@ data "azurerm_dns_zone" "pacemeinfo" {
   resource_group_name = "PaceMe.GlobalResources"
 }
 
-resource "azurerm_dns_cname_record" "example" {
-  name                = "example"
+resource "azurerm_dns_cname_record" "pacemeinfo" {
+  name                = var.domain_prefix
   zone_name           = data.azurerm_dns_zone.pacemeinfo.name
   resource_group_name = data.azurerm_dns_zone.pacemeinfo.resource_group_name
   ttl                 = 3600
   target_resource_id  = azurerm_cdn_endpoint.cdn_app.id
 }
 
-resource "azurerm_cdn_endpoint_custom_domain" "example" {
+resource "azurerm_cdn_endpoint_custom_domain" "pacemeinfo" {
   name            = var.domain_prefix
   cdn_endpoint_id = azurerm_cdn_endpoint.cdn_app.id
-  host_name       = "${azurerm_dns_cname_record.example.name}.${data.azurerm_dns_zone.pacemeinfo.name}"
+  host_name       = "${azurerm_dns_cname_record.pacemeinfo.name}.${data.azurerm_dns_zone.pacemeinfo.name}"
+
+  provisioner "local-exec" {
+    command = <<EOT
+    az cdn custom-domain enable-https \
+    --endpoint-name ${azurerm_cdn_endpoint.cdn_app.name} \
+    --resource-group ${azurerm_resource_group.pacemefrontend.name} \
+    --profile-name ${azurerm_cdn_profile.cdn.name} \
+    -n "${azurerm_cdn_endpoint_custom_domain.pacemeinfo.name}"
+    EOT
+  }
 }
