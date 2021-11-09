@@ -18,13 +18,9 @@ variable "environment" {
   default = "localdev"
 }
 
-variable "domain" {
+variable "domain_prefix" {
   type    = string
-  default = "app.paceme.info"
-}
-
-variable "cdn_application_id" {
-  default = "205478c0-bd83-4e1b-a9d6-db63a3e1e1c8" # This is azure's application UUID for a CDN endpoint
+  default = "localdev-app"
 }
 
 variable "regions" {
@@ -92,4 +88,24 @@ resource "azurerm_cdn_endpoint" "cdn_app" {
       protocol      = "Https"
     }
   }
+}
+
+
+data "azurerm_dns_zone" "pacemeinfo" {
+  name                = "paceme.info"
+  resource_group_name = "PaceMe.GlobalResources"
+}
+
+resource "azurerm_dns_cname_record" "example" {
+  name                = "example"
+  zone_name           = data.azurerm_dns_zone.pacemeinfo.name
+  resource_group_name = data.azurerm_dns_zone.pacemeinfo.resource_group_name
+  ttl                 = 3600
+  target_resource_id  = azurerm_cdn_endpoint.cdn_app.id
+}
+
+resource "azurerm_cdn_endpoint_custom_domain" "example" {
+  name            = var.domain_prefix
+  cdn_endpoint_id = azurerm_cdn_endpoint.cdn_app.id
+  host_name       = "${azurerm_dns_cname_record.example.name}.${data.azurerm_dns_zone.pacemeinfo.name}"
 }
