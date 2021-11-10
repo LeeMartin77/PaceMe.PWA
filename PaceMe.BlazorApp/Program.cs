@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using PaceMe.BlazorApp.Services;
 using PaceMe.BlazorApp.Properties;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Authentication.WebAssembly.Msal.Models;
 
 namespace PaceMe.BlazorApp
 {
@@ -59,6 +60,10 @@ namespace PaceMe.BlazorApp
                 builder.Configuration.Bind("AzureAdB2C", options.ProviderOptions.Authentication);
                 options.ProviderOptions.DefaultAccessTokenScopes.Add(functionApiScope);
                 options.ProviderOptions.LoginMode = "redirect";
+                options.ProviderOptions.Cache = new MsalCacheOptions {
+                    CacheLocation = "localStorage",
+                    StoreAuthStateInCookie = true
+                };
             });
         
             builder.Services.AddScoped<ITrainingPlanService, TrainingPlanService>();
